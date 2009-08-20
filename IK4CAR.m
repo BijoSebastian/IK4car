@@ -51,7 +51,7 @@ wgt = zeros(N,1);
 
 %The program is set to run only two iterations manually.
 %Solution is obtained within that.
-%If not set to iterate here(using loop or apropriate conditons.
+%If not set to iterate here using loop or apropriate conditons.
     
     %Clear graph
     cla;
@@ -83,52 +83,47 @@ wgt = zeros(N,1);
     input('wait');
     
     %Resampling
-    newparticles = zeros(2,N);
-    newwgt = zeros(N,1);
-    idx = randi(N);
-    beta = 0.0;
-    mw = max(wgt);
-    
-    for i = 1:N
-        beta = beta + rand*2.0*mw;
+   while(sum(std(particles,0,2)) > 0.1)
+        newparticles = zeros(2,N);
+        newwgt = zeros(N,1);
+        idx = randi(N);
+        beta = 0.0;
+        mw = max(wgt);
         
-        while (beta >= wgt(idx))
-            beta = beta - wgt(idx);
-            idx = mod(idx+1,N);
-            if (idx == 0)
-                idx = 1;
+        for i = 1:N
+            beta = beta + rand*2.0*mw;
+            
+            while (beta >= wgt(idx))
+                beta = beta - wgt(idx);
+                idx = mod(idx+1,N);
+                if (idx == 0)
+                    idx = 1;
+                end
             end
+            newparticles(:,i) = particles(:,idx);
+            newwgt(i) = wgt(idx);
         end
-        
-        newparticles(:,i) = particles(:,idx);
-        newwgt(i) = wgt(idx);
-    end
+        particles = newparticles;
+        wgt = newwgt;
+   end
     
-    wgt = newwgt;
     %Clear graph
     cla;
     
     %Plot particles
-    scatter(newparticles(1,:),newparticles(2,:),10,'filled','green');
+    scatter(newparticles(1,:),newparticles(2,:),10,'filled','red');
     xlabel('d');
     ylabel('psi');
     drawnow;
     sum(std(newparticles,0,2))
     input('wait');
     
-    %This limits the number of iterations
-    %If following condition not satisfied,
-    %The program will have to iterate more.
-    %Wierd and wrong but works for tests.
-    
     %Repopulate
-    if( sum(std(newparticles,0,2)) < 0.1)
-        for pno = 1:N
-            newparticles(1,pno) = newparticles(1,pno) + randn*ressprd;
-            newparticles(2,pno) = newparticles(2,pno) + randn*ressprd;
-        end
-    end
-    
+   for pno = 1:N
+       newparticles(1,pno) = newparticles(1,pno) + randn*ressprd;
+       newparticles(2,pno) = newparticles(2,pno) + randn*ressprd;
+   end
+
     particles = newparticles;
     
     %Plot particles
@@ -156,39 +151,39 @@ wgt = zeros(N,1);
         err = errcal(dsrd,attnd);
         
         %Calculate weight of particle
-        wgt(pno) = Gaussian(err,stderr);
-        
-        %input('wait');
+        wgt(pno) = Gaussian(err,stderr);   
         
     end
-    particles 
-    wgt
+    
     %Resampling
-    newparticles = zeros(2,N);
-    newwgt = zeros(N,1);
-    idx = randi(N);
-    beta = 0.0;
-    mw = max(wgt);
+    while( sum(std(particles,0,2)) > 0.1)
+        newparticles = zeros(2,N);
+        newwgt = zeros(N,1);
+        idx = randi(N);
+        beta = 0.0;
+        mw = max(wgt);
     
-    for i = 1:N
-        beta = beta + rand*2.0*mw;
+        for i = 1:N
+            beta = beta + rand*2.0*mw;
         
-        while (beta >= wgt(idx))
-            beta = beta - wgt(idx);
-            idx = mod(idx+1,N);
-            if (idx == 0)
-                idx = 1;
+            while (beta >= wgt(idx))
+                beta = beta - wgt(idx);
+                idx = mod(idx+1,N);
+                if (idx == 0)
+                    idx = 1;
+                end
             end
-        end
         
-        newparticles(:,i) = particles(:,idx);
-        newwgt(i) = wgt(idx);
+            newparticles(:,i) = particles(:,idx);
+            newwgt(i) = wgt(idx);
+        end
+    
+        particles = newparticles;
+        wgt = newwgt;
     end
     
-    wgt = newwgt;
-    particles = newparticles;
     %Plot particles
-    scatter(particles(1,:),particles(2,:),10,'filled','green');
+    scatter(particles(1,:),particles(2,:),10,'filled','blue');
     xlabel('d');
     ylabel('psi');
     drawnow;
@@ -197,5 +192,6 @@ wgt = zeros(N,1);
    
 %end of looping.
 
-sol(1) = (particles(1,pno)*((d_max - d_min)/range)) + d_min
-sol(2) = (particles(2,pno)*((psi_max - psi_min)/range)) + psi_min
+sol(1) = (particles(1,pno)*((d_max - d_min)/range)) + d_min;
+sol(2) = (particles(2,pno)*((psi_max - psi_min)/range)) + psi_min;
+sol
